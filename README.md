@@ -80,7 +80,7 @@ En la carpeta functions encontraremos un index.js, en ese archivo pondremos las 
 
     El siguiente código hace la función de crear usuarios en el authentication,  mediante el método POST:
 
-    ```
+    ```js
     const functions = require("firebase-functions");
     const admin = require("firebase-admin");
     admin.initializeApp(functions.config().firebase);
