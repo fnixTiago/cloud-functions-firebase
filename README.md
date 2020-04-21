@@ -68,4 +68,75 @@ Las clouds functions son funciones que se ejecutan como código del lado del ser
     ```
 
 
-2.  
+2. Crear cloud functions
+
+Después que hemos terminado de instalar las dependencias, abrimos la carpeta functions: 
+```
+cd .\functions
+```
+En la carpeta functions encontraremos un index.js, en ese archivo pondremos las funciones cloud functions
+
+3. Example:
+
+    El siguiente código hace la función de crear usuarios en el authentication,  mediante el método POST:
+
+    ```
+    const functions = require("firebase-functions");
+    const admin = require("firebase-admin");
+    admin.initializeApp(functions.config().firebase);
+    exports.crearUsuario = functions.https.onRequest((request, response) => {
+    response.header("Content-Type", "application/json");
+    response.header("Access-Control-Allow-Origin", "*");
+    response.header("Access-Control-Allow-Headers", "Content-Type");
+
+    if (request.method === "OPTIONS") {
+        return response.status(204).send("");
+    }
+    if (request.method === "GET") {
+        return response.status(404).send("Not founf method get");
+    } else if (request.method === "POST") {
+        return admin
+        .auth()
+        .createUser(request.body)
+        .then((userRecord) => {
+            return response.status(202).json({
+            message: "create successfully",
+            data: userRecord,
+            });
+        })
+        .catch((error) => {
+            console.log("Error de cloud ", error);
+            return response.status(500).send(error);
+        });
+    }
+    });
+    ```
+    Después de insertar el código pasaremos a deployarlo: 
+    ```
+    firebase deploy --only functions
+    ```
+    terminando la ejecución nos dará la *url function*
+    por ejemplo: 
+    ```
+    https://us-central1-proyecto.cloudfunctions.net/crearUsuario
+    ```
+    Para poder probar el servicio podemos utilizar el postman
+
+    [Descargar postman.](https://www.postman.com/)
+
+    Después de la instalación hacemos lo siguiente: 
+    
+        1) Seleccionamos el método POST en Postman
+        2) Agregamos la url function
+        3) Vamos a la pestaña headers:
+            a) agregamos como key: Content-Type y value: application/json
+
+    <img src="./imagenes/postman_headers.PNG" />
+
+    Después vamos a la pestaña Body y ingresamos el json para crear un nuevo usuario con el authentication
+    <img src="./imagenes/postman_body.PNG" />
+
+    Para finalizar le damos en **Send**
+
+
+    Gracias por leer este git.
